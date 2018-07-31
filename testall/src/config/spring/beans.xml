@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- Spring的IOC容器扫描控制层之外的所有配置bean -->
+	<context:component-scan base-package="com.zuper.tsa">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
+
+	<!-- 配置数据源, 整合其他框架, 事务等. -->
+	<!-- 测试IOC -->
+	<bean id="stu" class="com.zuper.tsa.spring.Student" init-method="init"
+		destroy-method="destroy">
+		<property name="id" value="1"></property>
+		<property name="name" value="hewc"></property>
+	</bean>
+
+	<!-- 使用p命名空间，简化属性注入语法 -->
+	<bean id="stu2" class="com.zuper.tsa.spring.Student" p:id="2" p:name="hewc2"></bean>
+
+	<!-- 通过静态工厂方法配置bean -->
+	<bean id="stu3" class="com.zuper.tsa.spring.StaticStudentFactory"
+		factory-method="getStu">
+		<constructor-arg value="zhaozq"></constructor-arg>
+	</bean>
+
+	<!-- 通过实例工厂方法配置bean，需要先配置工厂实例 -->
+	<bean id="stuFactory" class="com.zuper.tsa.spring.InstanceStudentFactory">
+	</bean>
+	<bean id="stu4" factory-bean="stuFactory" factory-method="getStu">
+		<constructor-arg value="hux"></constructor-arg>
+	</bean>
+	<!-- 通过FactoryBean配置bean -->
+	<bean id="stu5" class="com.zuper.tsa.spring.StudentFactoryBean">
+		<property name="id" value="4"></property>
+		<property name="name" value="luy"></property>
+	</bean>
+
+	<!-- 配置一个简单的Bean后置处理器，注：可不配置id，容器自动识别为后置处理器 -->
+	<bean class="com.zuper.tsa.spring.MyBeanPostProcessor"></bean>
+
+	<!-- my简单的DataSource >> Properties属性的注入<-Map属性的注入 -->
+	<bean id="myDataSource" class="com.zuper.tsa.spring.MyDataSource">
+		<!-- -->
+		<property name="propertie">
+			<props>
+				<!-- 真正开发会引入外部Properties文件 -->
+				<prop key="jdbcUrl">jdbc:mysql:///test</prop>
+				<prop key="driverClass">com.mysql.jdbc.Driver</prop>
+				<prop key="user">root</prop>
+				<prop key="password">hwc123</prop>
+			</props>
+		</property>
+	</bean>
+</beans>
